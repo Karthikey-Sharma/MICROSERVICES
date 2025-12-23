@@ -19,7 +19,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     // handling general exception
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // throw krna runtime exception ye aa jayege
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // throw krna runtime exception ye aa jayege controller wale mein orElseThrow mein
     public ErrorMessage handleGenericExceptionHandler(Exception exception){
         ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND , exception.getMessage());
         return message;
