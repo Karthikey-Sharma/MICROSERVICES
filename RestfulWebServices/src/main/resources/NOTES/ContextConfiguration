@@ -1,0 +1,146 @@
+Content Negotiation in Spring Boot
+1. What is Content Negotiation?
+
+Content Negotiation is a mechanism used by REST APIs to decide which format (media type) the response should be sent in, based on the client’s preference.
+
+👉 The same resource (URL) can return data in multiple formats, such as:
+
+JSON
+
+XML
+
+By default, Spring Boot returns JSON, but content negotiation allows flexibility.
+
+2. Why Use Content Negotiation?
+✅ Flexibility
+
+Different clients may need different formats:
+
+Web apps → JSON
+
+Mobile apps → JSON
+
+Legacy systems → XML
+
+✅ Scalability
+
+Avoids writing separate controllers for JSON and XML
+
+Configuration can be managed globally
+
+✅ RESTful Best Practice
+
+A single resource can have multiple representations
+
+Follows REST principles properly
+
+3. Ways to Implement Content Negotiation
+
+Spring Boot supports three main strategies:
+
+1️⃣ URL Parameter Based
+
+Client specifies format using a query parameter.
+
+Example:
+
+/employees?mediaType=xml
+
+2️⃣ HTTP Header Based (Accept Header)
+
+Client sends the preferred format in request headers.
+
+Example:
+
+Accept: application/xml
+
+3️⃣ URL Extension Based
+
+Format is decided using file extensions.
+
+Example:
+
+/employees.xml
+
+
+📌 In this explanation, we focus on Parameter-based Content Negotiation.
+
+4. Parameter-Based Content Negotiation (Step-by-Step)
+🔹 Step 1: Add XML Dependency
+
+Spring Boot supports JSON by default using Jackson.
+
+To enable XML, add the following dependency to pom.xml:
+
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+
+
+📌 This allows Spring Boot to convert Java objects into XML.
+
+🔹 Step 2: Create Configuration Class
+
+Create a configuration class that implements WebMvcConfigurer.
+
+This lets you customize content negotiation globally.
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+
+        configurer
+            .favorParameter(true)                         // Enable parameter-based negotiation
+            .parameterName("mediaType")                  // URL parameter name
+            .ignoreAcceptHeader(true)                    // Ignore Accept header
+            .defaultContentType(MediaType.APPLICATION_JSON) // Default response type
+            .mediaType("json", MediaType.APPLICATION_JSON)  // Map "json" keyword
+            .mediaType("xml", MediaType.APPLICATION_XML);   // Map "xml" keyword
+    }
+}
+
+🔹 Explanation of Key Configuration Options
+Method	Description
+favorParameter(true)	Enables content negotiation via URL parameter
+parameterName("mediaType")	Defines the query parameter name
+ignoreAcceptHeader(true)	Ignores Accept HTTP header
+defaultContentType(JSON)	Sets JSON as the default response
+mediaType("json", ...)	Maps mediaType=json
+mediaType("xml", ...)	Maps mediaType=xml
+5. Controller Example (No Changes Required)
+
+Your controller does not need separate logic for JSON or XML.
+
+@RestController
+public class EmployeeController {
+
+    @GetMapping("/employees")
+    public List<Employee> getEmployees() {
+        return List.of(
+            new Employee(1, "John"),
+            new Employee(2, "Alice")
+        );
+    }
+}
+
+
+📌 Spring Boot automatically converts the response format.
+
+6. Testing the API
+Request	URL	Response
+Default	/employees	JSON
+XML	/employees?mediaType=xml	XML
+JSON	/employees?mediaType=json	JSON
+7. Summary
+
+✔ Content Negotiation allows the same API to return data in multiple formats
+✔ Parameter-based negotiation is simple and explicit
+✔ XML support requires an additional Jackson dependency
+✔ Configuration is done globally using WebMvcConfigurer
+✔ Controllers remain clean and unchanged
+
+
+ChatLink - https://chatgpt.com/share/694a9650-5610-8012-9dfd-7a82e428fd8b
