@@ -25,11 +25,9 @@ public class HomeController
         return "The path variable is :- " + id + " " + name;
     }
 
-    //using request Parameterg - these are generally non mandatory = false
+    //using request Parameters - these are generally non mandatory = false
     @GetMapping("/requestParam")
     public String requestParams(@RequestParam String name , @RequestParam(name = "email" , required = false ,defaultValue = "") String emailId){
         return "Your name is :- " + name + " and email id is :- "+ emailId;
     }
-
-
 }
